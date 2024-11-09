@@ -1,12 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
+const bodyParser = require('body-parser');
 
 //Configure Express
 const app = express();
 
 //Configure CORS
 app.use(cors());
+
+// Parse application/json
+app.use(bodyParser.json());
+
+// Parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 const PORT = process.env.PORT || 3000;
@@ -16,10 +23,11 @@ app.listen(PORT, () => {
 
 // Configure MySQL connection
 const db = mysql.createConnection({
-    host: 'localhost',     // Your MySQL host
+    host: 'db',     // Your MySQL host
     user: 'root',          // Your MySQL user
     password: 'root',  // Your MySQL password
-    database: 'docker'     // Your MySQL database
+    database: 'docker',     // Your MySQL database
+    port: 3306
 });
 
 // Connect to MySQL
@@ -50,6 +58,7 @@ app.post('/users', (req, res) => {
     const query = 'INSERT INTO users (name, email) VALUES (?, ?)';
     db.query(query, [name, email], (err, results) => {
         if (err) {
+
         console.error('Error adding user:', err);
         res.status(500).json({ success: false, error: 'Failed to add user' });
         } else {
